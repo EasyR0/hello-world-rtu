@@ -2,9 +2,6 @@ name: Python Greetings Pipeline
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   install-pip-deps:
@@ -13,12 +10,8 @@ jobs:
       - name: Checkout pipeline repo
         uses: actions/checkout@v6
 
-      - name: Info
-        run: echo Installing all required dependencies..
-        shell: cmd
-
       - name: Debug files
-        run: dir .github\actions\install-pip-deps
+        run: type .github\actions\install-pip-deps\action.yml
         shell: cmd
 
       - name: Install Python dependencies
