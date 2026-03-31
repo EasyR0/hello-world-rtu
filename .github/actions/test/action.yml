@@ -19,8 +19,23 @@ runs:
         repository: mtararujs/course-js-api-framework
         path: ${{ inputs.test_path }}
 
+    - name: Show Node version
+      run: node -v
+      shell: cmd
+      working-directory: ${{ inputs.test_path }}
+
+    - name: Show NPM version
+      run: npm -v
+      shell: cmd
+      working-directory: ${{ inputs.test_path }}
+
     - name: Install npm dependencies
       run: npm install
+      shell: cmd
+      working-directory: ${{ inputs.test_path }}
+
+    - name: Show package scripts
+      run: type package.json
       shell: cmd
       working-directory: ${{ inputs.test_path }}
 
