@@ -1,9 +1,18 @@
+name: Python Greetings Pipeline
+
+on:
+  workflow_dispatch:
+
 jobs:
   install-pip-deps:
     runs-on: self-hosted
     steps:
       - name: Checkout pipeline repo
         uses: actions/checkout@v6
+
+      - name: Info
+        run: echo Installing all required dependencies..
+        shell: cmd
 
       - name: Install Python dependencies
         uses: ./.github/actions/install-pip-deps
@@ -16,6 +25,10 @@ jobs:
     steps:
       - name: Checkout pipeline repo
         uses: actions/checkout@v6
+
+      - name: Info
+        run: echo Deploying application to DEV..
+        shell: cmd
 
       - name: Deploy to DEV
         uses: ./.github/actions/deploy
@@ -30,6 +43,10 @@ jobs:
     steps:
       - name: Checkout pipeline repo
         uses: actions/checkout@v6
+
+      - name: Info
+        run: echo Running tests on DEV..
+        shell: cmd
 
       - name: Run tests on DEV
         uses: ./.github/actions/test
