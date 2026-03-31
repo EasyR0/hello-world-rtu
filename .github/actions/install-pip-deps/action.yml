@@ -1,20 +1,29 @@
-name: Python Greetings Pipeline
+name: Install pip dependencies
+description: Clone python-greetings and install Python requirements
 
-on:
-  workflow_dispatch:
+inputs:
+  app_path:
+    description: Path where python-greetings will be cloned
+    required: true
 
-jobs:
-  install-pip-deps:
-    runs-on: self-hosted
-    steps:
-      - name: Checkout pipeline repo
-        uses: actions/checkout@v6
+runs:
+  using: composite
+  steps:
+    - name: Checkout pipeline repo
+      uses: actions/checkout@v6
 
-      - name: Info
-        run: echo Installing all required dependencies...
-        shell: cmd
+    - name: Clone python-greetings
+      uses: actions/checkout@v6
+      with:
+        repository: mtararujs/python-greetings
+        path: ${{ inputs.app_path }}
 
-      - name: Install Python dependencies
-        uses: ./.github/actions/install-pip-deps
-        with:
-          app_path: python-greetings
+    - name: Create venv
+      run: python -m venv venv
+      shell: cmd
+      working-directory: ${{ inputs.app_path }}
+
+    - name: Install requirements
+      run: venv\Scripts\python.exe -m pip install -r requirements.txt
+      shell: cmd
+      working-directory: ${{ inputs.app_path }}
