@@ -48,3 +48,18 @@ runs:
       run: pm2 list
       shell: cmd
       working-directory: ${{ inputs.app_path }}
+
+    - name: Show PM2 list
+      run: pm2 list
+      shell: cmd
+      working-directory: ${{ inputs.app_path }}
+
+    - name: Show PM2 logs
+      run: pm2 logs greetings-app-${{ inputs.env_name }} --lines 30 --nostream
+      shell: cmd
+      working-directory: ${{ inputs.app_path }}
+
+    - name: Test local endpoint
+      run: curl http://127.0.0.1:${{ inputs.port }}
+      shell: cmd
+      working-directory: ${{ inputs.app_path }}
