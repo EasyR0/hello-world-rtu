@@ -9,7 +9,7 @@ inputs:
     description: Port number
     required: true
   app_path:
-    description: Path where python-greetings will be cloned
+    description: Temporary path where python-greetings will be cloned
     required: true
 
 runs:
@@ -24,42 +24,49 @@ runs:
         repository: mtararujs/python-greetings
         path: ${{ inputs.app_path }}
 
-    - name: Create venv
+    - name: Recreate persistent app directory
+      run: |
+        if exist C:\greetings-apps\greetings-app-${{ inputs.env_name }} rmdir /s /q C:\greetings-apps\greetings-app-${{ inputs.env_name }}
+        mkdir C:\greetings-apps
+        xcopy /E /I /Y ${{ inputs.app_path }} C:\greetings-apps\greetings-app-${{ inputs.env_name }}\
+      shell: cmd
+
+    - name: Create venv in persistent directory
       run: python -m venv venv
       shell: cmd
-      working-directory: ${{ inputs.app_path }}
+      working-directory: C:\greetings-apps\greetings-app-${{ inputs.env_name }}
 
-    - name: Install requirements
+    - name: Install requirements in persistent directory
       run: venv\Scripts\python.exe -m pip install -r requirements.txt
       shell: cmd
-      working-directory: ${{ inputs.app_path }}
+      working-directory: C:\greetings-apps\greetings-app-${{ inputs.env_name }}
 
     - name: Delete old PM2 process
       run: pm2 delete greetings-app-${{ inputs.env_name }} & set "errorlevel=0"
       shell: cmd
-      working-directory: ${{ inputs.app_path }}
+      working-directory: C:\greetings-apps\greetings-app-${{ inputs.env_name }}
 
     - name: Start app with PM2
       run: pm2 start app.py --name greetings-app-${{ inputs.env_name }} --interpreter venv\Scripts\python.exe -- --port ${{ inputs.port }}
       shell: cmd
-      working-directory: ${{ inputs.app_path }}
+      working-directory: C:\greetings-apps\greetings-app-${{ inputs.env_name }}
 
     - name: Show PM2 list
       run: pm2 list
       shell: cmd
-      working-directory: ${{ inputs.app_path }}
-
-    - name: Show PM2 logs
-      run: pm2 logs greetings-app-${{ inputs.env_name }} --lines 30 --nostream
-      shell: cmd
-      working-directory: ${{ inputs.app_path }}
+      working-directory: C:\greetings-apps\greetings-app-${{ inputs.env_name }}
 
     - name: Wait for app to boot
       run: powershell -Command "Start-Sleep -Seconds 5"
       shell: cmd
-      working-directory: ${{ inputs.app_path }}
+      working-directory: C:\greetings-apps\greetings-app-${{ inputs.env_name }}
 
     - name: Test local endpoint
       run: curl http://127.0.0.1:${{ inputs.port }}/greetings
       shell: cmd
-      working-directory: ${{ inputs.app_path }}
+      working-directory: C:\greetings-apps\greetings-app-${{ inputs.env_name }}
+
+    - name: Show PM2 logs
+      run: pm2 logs greetings-app-${{ inputs.env_name }} --lines 30 --nostream
+      shell: cmd
+      working-directory: C:\greetings-apps\greetings-app-${{ inputs.env_name }}
