@@ -1,18 +1,9 @@
-name: Python Greetings Pipeline
-
-on:
-  workflow_dispatch:
-
 jobs:
   install-pip-deps:
     runs-on: self-hosted
     steps:
       - name: Checkout pipeline repo
         uses: actions/checkout@v6
-
-      - name: Info
-        run: echo Installing all required dependencies..
-        shell: cmd
 
       - name: Install Python dependencies
         uses: ./.github/actions/install-pip-deps
@@ -26,13 +17,22 @@ jobs:
       - name: Checkout pipeline repo
         uses: actions/checkout@v6
 
-      - name: Info
-        run: echo Deploying application to DEV..
-        shell: cmd
-
       - name: Deploy to DEV
         uses: ./.github/actions/deploy
         with:
           env_name: dev
           port: "7001"
           app_path: python-greetings
+
+  tests-on-dev:
+    runs-on: self-hosted
+    needs: deploy-to-dev
+    steps:
+      - name: Checkout pipeline repo
+        uses: actions/checkout@v6
+
+      - name: Run tests on DEV
+        uses: ./.github/actions/test
+        with:
+          env_name: dev
+          test_path: course-js-api-framework
