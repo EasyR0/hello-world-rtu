@@ -1,11 +1,15 @@
 name: Deploy python greetings app
+description: Clone python-greetings and deploy it with PM2
 
 inputs:
   env_name:
+    description: Environment name
     required: true
   port:
+    description: Port number
     required: true
   app_path:
+    description: Path where python-greetings will be cloned
     required: true
 
 runs:
@@ -37,5 +41,10 @@ runs:
 
     - name: Start app with PM2
       run: pm2 start app.py --name greetings-app-${{ inputs.env_name }} --interpreter venv\Scripts\python.exe -- --port ${{ inputs.port }}
+      shell: cmd
+      working-directory: ${{ inputs.app_path }}
+
+    - name: Show PM2 list
+      run: pm2 list
       shell: cmd
       working-directory: ${{ inputs.app_path }}
