@@ -55,7 +55,7 @@ runs:
       working-directory: ${{ inputs.app_path }}
 
     - name: Wait for app to boot
-      run: timeout /t 5 /nobreak
+      run: powershell -Command "Start-Sleep -Seconds 5"
       shell: cmd
       working-directory: ${{ inputs.app_path }}
 
