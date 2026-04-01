@@ -1,29 +1,23 @@
 name: Install pip dependencies
-description: Clone python-greetings and install Python requirements
 
 inputs:
   app_path:
-    description: Path where python-greetings will be cloned
     required: true
 
 runs:
   using: composite
   steps:
-    - name: Checkout pipeline repo
-      uses: actions/checkout@v6
+    - uses: actions/checkout@v6
 
-    - name: Clone python-greetings
-      uses: actions/checkout@v6
+    - uses: actions/checkout@v6
       with:
         repository: mtararujs/python-greetings
         path: ${{ inputs.app_path }}
 
-    - name: Create venv
-      run: python -m venv venv
+    - run: python -m venv venv
       shell: cmd
       working-directory: ${{ inputs.app_path }}
 
-    - name: Install requirements
-      run: venv\Scripts\python.exe -m pip install -r requirements.txt
+    - run: venv\Scripts\python.exe -m pip install -r requirements.txt
       shell: cmd
       working-directory: ${{ inputs.app_path }}
