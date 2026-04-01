@@ -1,0 +1,118 @@
+name: Python Greetings Pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  install-pip-deps:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v6
+      - run: echo Installing dependencies...
+        shell: cmd
+      - uses: ./.github/actions/install-pip-deps
+        with:
+          app_path: python-greetings
+
+  deploy-to-dev:
+    runs-on: self-hosted
+    needs: install-pip-deps
+    steps:
+      - uses: actions/checkout@v6
+      - run: echo Deploying to dev...
+        shell: cmd
+      - uses: ./.github/actions/deploy
+        with:
+          env_name: dev
+          port: "7001"
+          app_path: python-greetings
+
+  tests-on-dev:
+    runs-on: self-hosted
+    needs: deploy-to-dev
+    steps:
+      - uses: actions/checkout@v6
+      - run: echo Testing dev...
+        shell: cmd
+      - uses: ./.github/actions/test
+        with:
+          env_name: dev
+          test_path: course-js-api-framework
+
+  deploy-to-stg:
+    runs-on: self-hosted
+    needs: tests-on-dev
+    steps:
+      - uses: actions/checkout@v6
+      - run: echo Deploying to stg...
+        shell: cmd
+      - uses: ./.github/actions/deploy
+        with:
+          env_name: stg
+          port: "7002"
+          app_path: python-greetings
+
+  tests-on-stg:
+    runs-on: self-hosted
+    needs: deploy-to-stg
+    steps:
+      - uses: actions/checkout@v6
+      - run: echo Testing stg...
+        shell: cmd
+      - uses: ./.github/actions/test
+        with:
+          env_name: stg
+          test_path: course-js-api-framework
+
+  deploy-to-preprod:
+    runs-on: self-hosted
+    needs: tests-on-stg
+    steps:
+      - uses: actions/checkout@v6
+      - run: echo Deploying to preprod...
+        shell: cmd
+      - uses: ./.github/actions/deploy
+        with:
+          env_name: preprod
+          port: "7003"
+          app_path: python-greetings
+
+  tests-on-preprod:
+    runs-on: self-hosted
+    needs: deploy-to-preprod
+    steps:
+      - uses: actions/checkout@v6
+      - run: echo Testing preprod...
+        shell: cmd
+      - uses: ./.github/actions/test
+        with:
+          env_name: preprod
+          test_path: course-js-api-framework
+
+  deploy-to-prod:
+    runs-on: self-hosted
+    needs: tests-on-preprod
+    steps:
+      - uses: actions/checkout@v6
+      - run: echo Deploying to prod...
+        shell: cmd
+      - uses: ./.github/actions/deploy
+        with:
+          env_name: prod
+          port: "7004"
+          app_path: python-greetings
+
+  tests-on-prod:
+    runs-on: self-hosted
+    needs: deploy-to-prod
+    steps:
+      - uses: actions/checkout@v6
+      - run: echo Testing prod...
+        shell: cmd
+      - uses: ./.github/actions/test
+        with:
+          env_name: prod
+          test_path: course-js-api-framework
